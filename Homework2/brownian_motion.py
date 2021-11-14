@@ -9,7 +9,7 @@ from math import sqrt
 from matplotlib import pyplot as plt 
 
 # Parameters and initial conditions
-r = 1 							# micrometer
+r = 1 * 10**-6					# micrometer
 m = 1.11 * 10 ** -14 			# kg
 eta = 0.001 					# N/s
 gamma = 6 * np.pi * eta * r
@@ -46,7 +46,28 @@ for step in range(nSteps):
 
 # Make some nice plots
 plt.figure(figsize=(20,6))
-plt.plot(massPath,linewidth=0.1,color="red")
-plt.plot(masslessPath,linewidth=0.1,color="blue")
+
+# Plot for time duration = 1 tau
+plt.subplot(1,3,1)
+plt.plot(massPath[0:20],linewidth=0.3,color="red")
+plt.plot(masslessPath[0:20],linewidth=0.3,color="blue")
+xTicks1 = [0, 10, 20]  # dT = 0.05 * tau 
+tickLabels1 = ['0','0.5', '1']
+plt.xticks(xTicks1, tickLabels1)
+plt.ylabel('x(t)')
+plt.xlabel('t / tau')
+
+# Plot for time duration = 100 tau
+plt.subplot(1,3,2)
+plt.plot(massPath,linewidth=0.3,color="red")
+plt.plot(masslessPath,linewidth=0.3,color="blue")
+xTicks2 = np.multiply(xTicks1,100)
+tickLabels2 = ['0','50','100']
+plt.xticks(xTicks2, tickLabels2)
+plt.ylabel('x(t)')
+plt.xlabel('t / tau')
+
+# Plot the MSD
+plt.subplot(1,3,3)
 		
 plt.show()
