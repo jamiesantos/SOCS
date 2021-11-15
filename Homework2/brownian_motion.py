@@ -18,9 +18,11 @@ tau = m / gamma
 dT = 0.05 * tau					# set to less than 0.1 tau
 kB = 1.380649 * 10**-23			# J * K^-1
 length = 100 * tau
-nSteps = int(length / dT)
-nAgents = 100					# Number of realizations
-#nSteps = 5
+#nSteps = int(length / dT)
+#nAgents = 100					# Number of realizations
+nSteps = 10
+nAgents = 7
+
 # Get the next step (with mass):
 def nextStepMass(dT, gamma, m, kB, temp, w, xList):
 	denom = (1 + dT * (gamma/m))
@@ -95,10 +97,30 @@ for t in range(nSteps - 1):
 
 # Plot the MSDs
 plt.subplot(1,3,3)
-plt.plot(msdMassList,linewidth = 0.5, color="red")
-plt.plot(msdMasslessList,linewidth = 0.5, color="blue")
+plt.plot(msdMassList,linewidth = 0.5, color="red",label="With mass")
+plt.plot(msdMasslessList,linewidth = 0.5, color="blue",label="Without mass")
+plt.legend(loc="upper left")
 plt.yscale('log')
 plt.xscale('log')
+plt.xlim(2,2000)
+xTicks1 = [20, 2000]  # dT = 0.05 * tau 
+tickLabels1 = ['10^0', '10^2']
+plt.xticks(xTicks1, tickLabels1)
 plt.ylabel('MSD')
 plt.xlabel('t / tau')
-plt.show()
+plt.show(block=False)
+
+# Calculate eMSD
+print("eMSD, with mass: " + str(np.average(msdMassList)))
+print("eMSD, without mass: " + str(np.average(msdMasslessList)))
+
+# Calculate tMSD
+massPath,masslessPath = generateTrajectories() # Generate a single path
+squareDistances1 = [np.square(item) for item in massPaths] # Starting position is 0
+squareDistances2 = [np.square(item) for item in masslessPaths]
+msdMass = (1/nAgents) * sum(squareDistances1)
+msdMassless = (1/nAgents) * sum(squareDistances2)
+
+
+print("tMSD, with mass: " + str(np.average(msdMass)))
+print("tMSD, without mass: " + str(np.average(msdMassless)))
