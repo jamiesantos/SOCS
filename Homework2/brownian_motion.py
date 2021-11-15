@@ -10,16 +10,17 @@ from matplotlib import pyplot as plt
 
 # Parameters and initial conditions
 r = 1 * 10**-6					# micrometer
-m = 1.11 * 10 ** -14 			# kg
-eta = 0.001 					# N/s
+m = 1.11 * 10 ** -14			# kg
+eta = 0.001						# N/s
 gamma = 6 * np.pi * eta * r
 temp = 300						# K
 tau = m / gamma
 dT = 0.05 * tau					# set to less than 0.1 tau
-kB = 1.380649 * 10**-23 		# J * K^-1
+kB = 1.380649 * 10**-23			# J * K^-1
 length = 100 * tau
 nSteps = int(length / dT)
-
+nAgents = 100					# Number of realizations
+#nSteps = 5
 # Get the next step (with mass):
 def nextStepMass(dT, gamma, m, kB, temp, w, xList):
 	denom = (1 + dT * (gamma/m))
@@ -32,17 +33,22 @@ def nextStepMass(dT, gamma, m, kB, temp, w, xList):
 
 # Get the next step (without mass):
 def nextStepSimple(dT, gamma, kB, temp, w, xList):
-    xNew = xList[-1] + sqrt((2 * kB * temp * dT)/gamma) * w
-    xList.append(xNew)
-    return xList
+	xNew = xList[-1] + sqrt((2 * kB * temp * dT)/gamma) * w
+	xList.append(xNew)
+	return xList
 
 # Generate the trajectories
-massPath = [0, 0] 	# Prime the paths with x_(i-2), x_(i-1)
-masslessPath = [0, 0]
-for step in range(nSteps):
-	w = np.random.normal()
-	massPath = nextStepMass(dT, gamma, m, kB, temp, w, massPath)
-	masslessPath = nextStepSimple(dT, gamma, kB, temp, w, masslessPath)
+def generateTrajectories():
+	massPath = [0, 0]	# Prime the paths with x_(i-2), x_(i-1)
+	masslessPath = [0, 0]
+	for step in range(nSteps):
+		w = np.random.normal()
+		massPath = nextStepMass(dT, gamma, m, kB, temp, w, massPath)
+		masslessPath = nextStepSimple(dT, gamma, kB, temp, w, masslessPath)
+	return massPath,masslessPath
+
+# Get trajectories for inital two plots
+massPath,masslessPath = generateTrajectories()
 
 # Make some nice plots
 plt.figure(figsize=(20,6))
@@ -67,7 +73,32 @@ plt.xticks(xTicks2, tickLabels2)
 plt.ylabel('x(t)')
 plt.xlabel('t / tau')
 
-# Plot the MSD
+# Compute MSDs for several realizations
+msdMassList = []
+msdMasslessList = []
+
+# Generate many realizations of paths
+massPaths = []
+masslessPaths = []
+for agent in range(nAgents):	
+	massPath,masslessPath = generateTrajectories()	  
+	massPaths.append(massPath)
+	masslessPaths.append(masslessPath)
+
+for t in range(nSteps - 1):
+	squareDistances1 = [np.square(item[t]) for item in massPaths] # Starting position is 0
+	squareDistances2 = [np.square(item[t]) for item in masslessPaths]
+	msdMass = (1/nAgents) * sum(squareDistances1)
+	msdMassList.append(msdMass)
+	msdMassless = (1/nAgents) * sum(squareDistances2)
+	msdMasslessList.append(msdMassless)
+
+# Plot the MSDs
 plt.subplot(1,3,3)
-		
+plt.plot(msdMassList,linewidth = 0.5, color="red")
+plt.plot(msdMasslessList,linewidth = 0.5, color="blue")
+plt.yscale('log')
+plt.xscale('log')
+plt.ylabel('MSD')
+plt.xlabel('t / tau')
 plt.show()
