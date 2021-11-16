@@ -40,32 +40,38 @@ plt.scatter(trajX*10**9,trajY*10**9,s=0.1)
 plt.axis('equal')
 plt.xlabel('x [nm]')
 plt.ylabel('y [nm]')
-#plt.show(block=False)
 
 # Plot the distribution curves
 plt.figure()
-N = 1000
-n = N//10
-p, x = np.histogram(trajX, bins=n) 	# arrange the data 
-x = x[:-1] + (x[1] - x[0])/2 		# center the bins
-#plt.plot(x, p, color="red", label="x")
-p, y = np.histogram(trajY, bins=n)
+numBins = 100
+pX, x = np.histogram(trajX, bins=numBins, density=True)  # sort data into histograms 
+pY, y = np.histogram(trajY, bins=numBins, density=True)
+x = x[:-1] + (x[1] - x[0])/2 				# center the bins
 y = y[:-1] + (y[1] - y[0])/2
-#plt.plot(y, p, color="blue", label = "y")
+plt.plot(x, pX, color="red", label="x (experimental)")
+plt.plot(y, pY, color="blue", label = "y (experimental)")
+pXOld = pX
+pYOld = pY
 
-# Calculate the theoretical Boltzmann distribution
+# Calculate the theoretical Boltzmann distributions
 pX = np.zeros(len(x))
 pY = np.zeros(len(y))
-for i in range(len(x)):		# Get potential energies in x direction
+for i in range(len(x)):	
+	# Get potential energies
 	uX = 0.5 * kX * x[i]**2
 	uY = 0.5 * kY * y[i]**2
+	# Get Boltzmann probabilities
 	pX[i] = np.exp(-uX / (kB * temp))
 	pY[i] = np.exp(-uY / (kB * temp))
+# Normalize scale
+pX = [item * sum(pXOld) / sum(pX) for item in pX]
+pY = [item * sum(pYOld) / sum(pY) for item in pY]
 
-plt.plot(x, pX, color="green", label="x")
-plt.plot(x, pY, color="cyan", label="x")
+# Plot the theoretical Boltzmann distributions
+plt.plot(x, pX, color="orange", label="x (theoretical)")
+plt.plot(y, pY, color="cyan", label="y (theoretical)")
+plt.yticks([])
 plt.xlabel('x,y')
 plt.ylabel('p(x), p(y)')
 plt.legend(loc="upper left")
-#plt.yticks([], [])
 plt.show()
