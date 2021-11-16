@@ -40,4 +40,16 @@ plt.scatter(trajX*10**9,trajY*10**9,s=0.1)
 plt.axis('equal')
 plt.xlabel('x [nm]')
 plt.ylabel('y [nm]')
+#plt.show(block=False)
+
+# Plot the distribution curves
+plt.figure()
+N = 1000
+n = N//10
+p, x = np.histogram(trajX, bins=n)
+x = x[:-1] + (x[1] - x[0])/2 
+plt.plot(x, p, color="red")
+p, y = np.histogram(trajY, bins=n)
+y = y[:-1] + (y[1] - y[0])/2
+plt.plot(x, p, color="blue")
 plt.show()
