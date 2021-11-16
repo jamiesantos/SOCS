@@ -74,4 +74,24 @@ plt.yticks([])
 plt.xlabel('x,y')
 plt.ylabel('p(x), p(y)')
 plt.legend(loc="upper left")
+
+# Calculate the experimental autocorrelations
+
+
+# Calculate the theoretical autocorrelations
+cXTheory = np.zeros(100)
+cYTheory = np.zeros(100)
+for t in range(100):
+	cXTheory[t] = ((kB * temp)/kX) * np.exp(-kX * dT * t / gamma)
+	cYTheory[t] = ((kB * temp)/kY) * np.exp(-kY * dT * t / gamma)
+print(len(cXTheory))
+plt.figure()
+plt.plot(cXTheory,color="red")
+plt.plot(cYTheory,color="blue")
+plt.yticks([])
+xTicks = [0, 20, 40, 60, 80, 100] # dT = 0.001
+tickLabels = ['0','0.2', '0.4', '0.6', '0.8', '1']
+plt.xticks(xTicks, tickLabels)
+plt.xlabel('Time [s]')
+plt.ylabel('Cx, Cy')
 plt.show()
