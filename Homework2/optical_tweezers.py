@@ -46,10 +46,26 @@ plt.ylabel('y [nm]')
 plt.figure()
 N = 1000
 n = N//10
-p, x = np.histogram(trajX, bins=n)
-x = x[:-1] + (x[1] - x[0])/2 
-plt.plot(x, p, color="red")
+p, x = np.histogram(trajX, bins=n) 	# arrange the data 
+x = x[:-1] + (x[1] - x[0])/2 		# center the bins
+#plt.plot(x, p, color="red", label="x")
 p, y = np.histogram(trajY, bins=n)
 y = y[:-1] + (y[1] - y[0])/2
-plt.plot(x, p, color="blue")
+#plt.plot(y, p, color="blue", label = "y")
+
+# Calculate the theoretical Boltzmann distribution
+pX = np.zeros(len(x))
+pY = np.zeros(len(y))
+for i in range(len(x)):		# Get potential energies in x direction
+	uX = 0.5 * kX * x[i]**2
+	uY = 0.5 * kY * y[i]**2
+	pX[i] = np.exp(-uX / (kB * temp))
+	pY[i] = np.exp(-uY / (kB * temp))
+
+plt.plot(x, pX, color="green", label="x")
+plt.plot(x, pY, color="cyan", label="x")
+plt.xlabel('x,y')
+plt.ylabel('p(x), p(y)')
+plt.legend(loc="upper left")
+#plt.yticks([], [])
 plt.show()
