@@ -25,6 +25,7 @@ trajY = np.zeros(nSteps)
 wX = np.random.default_rng().normal(0, 1, size=(nSteps))
 wY = np.random.default_rng().normal(0, 1, size=(nSteps))
 
+#def generate_trajectories(kX,kY):
 for i in range(nSteps - 1):
 	termX2 = (-kX/gamma) * trajX[i] * dT
 	termX3 = sqrt((2 * kB * temp * dT)/gamma) * wX[i+1]
@@ -33,6 +34,9 @@ for i in range(nSteps - 1):
 	termY2 = (-kY/gamma) * trajY[i] * dT
 	termY3 = sqrt((2 * kB * temp * dT)/gamma) * wY[i+1]
 	trajY[i + 1] = trajY[i] + termY2 + termY3
+#	return trajX,trajY
+
+#trajX,trajY = generate_trajectories(kX,kY)
 
 # Plot the path of the particle
 plt.figure(figsize=(10,10))
@@ -79,47 +83,56 @@ plt.figure()
 
 # Calculate the experimental autocorrelations
 cLength = 100
+lags = np.arange(cLength) 	# tPrime - t values
+meanX=np.mean(trajX)
+meanY=np.mean(trajY)
+trajX = trajX - meanX
+trajY = trajY - meanY
+var=np.var(trajX)			# Normalize by dividing by variance
+var=np.var(trajY)
 cXExp = np.zeros(cLength)
 cYExp = np.zeros(cLength)
-for t in range(cLength):
-	cXSum = 0
-	counter = 0
-	for l in range(cLength):	
-		if l < t:
-			counter += 1
-			cXSum += trajX[t + l]
-			print(trajX[t])
-			print(trajX[t-l])
-			cXExp[t] = (1/cLength) * (trajX[l] * cXSum)
 
-mean=np.mean(trajX)
-var=np.var(trajX)
-xp=trajX-mean
-lags = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
-corrX=[1. if l==0 else np.sum(xp[l:]*xp[:-l])/len(trajX)/var for l in lags]
-
-mean=np.mean(trajY)
-var=np.var(trajY)
-yp=trajY-mean
-corrY=[1. if l==0 else np.sum(yp[l:]*yp[:-l])/len(trajY)/var for l in lags]
-
-plt.plot(corrX,color="orange")
-plt.plot(corrY,color="cyan")
-plt.show()
+cXExp=[1. if l==0 else np.sum(trajX[l:]*trajX[:-l])/len(trajX)/var for l in lags]
+cYExp=[1. if l==0 else np.sum(trajY[l:]*trajY[:-l])/len(trajY)/var for l in lags]
+plt.plot(cXExp[1:],color="orange",label="C_x: experimental")
+plt.plot(cYExp[1:],color="cyan",label="C_y: experimental")
 
 # Calculate the theoretical autocorrelations
 cXTheory = np.zeros(cLength)
 cYTheory = np.zeros(cLength)
+
 for t in range(cLength):
 	cXTheory[t] = ((kB * temp)/kX) * np.exp(-kX * dT * t / gamma)
 	cYTheory[t] = ((kB * temp)/kY) * np.exp(-kY * dT * t / gamma)
-plt.plot(cXTheory,color="red")
-plt.plot(cYTheory,color="blue")
+
+scaleX = np.average(cXExp)/np.average(cXTheory)
+scaleY = np.average(cYExp)/np.average(cYTheory)
+
+for i in range(len(cXTheory)):
+	cXTheory[i] = cXTheory[i] * scaleX
+	cYTheory[i] = cYTheory[i] * scaleY
+#plt.plot(cXTheory,color="red",label="C_x: theoretical")
+#plt.plot(cYTheory,color="blue",label="C_y: theoretical")
+
 plt.yticks([])
 xTicks = [0, 20, 40, 60, 80, 100] # dT = 0.001
 tickLabels = ['0','0.2', '0.4', '0.6', '0.8', '1']
 plt.xticks(xTicks, tickLabels)
 plt.xlabel('Time [s]')
 plt.ylabel('Cx, Cy')
+plt.legend(loc="upper right")
+plt.show(block=False)
+
+# Simulate particle motion for range of stiffnesses
+kList = [0.5*10**-6, 10**-6 , 2*10**-6, 5*10**-6, 10*10**-6]
+
+#for i, kVal in enumarate(kList):
+	
+
+# Plot variance as function of stiffness
+
+
+
 
 plt.show()
