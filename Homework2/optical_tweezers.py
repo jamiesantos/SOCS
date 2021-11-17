@@ -75,17 +75,44 @@ plt.xlabel('x,y')
 plt.ylabel('p(x), p(y)')
 plt.legend(loc="upper left")
 
-# Calculate the experimental autocorrelations
+plt.figure()
 
+# Calculate the experimental autocorrelations
+cLength = 100
+cXExp = np.zeros(cLength)
+cYExp = np.zeros(cLength)
+for t in range(cLength):
+	cXSum = 0
+	counter = 0
+	for l in range(cLength):	
+		if l < t:
+			counter += 1
+			cXSum += trajX[t + l]
+			print(trajX[t])
+			print(trajX[t-l])
+			cXExp[t] = (1/cLength) * (trajX[l] * cXSum)
+
+mean=np.mean(trajX)
+var=np.var(trajX)
+xp=trajX-mean
+lags = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
+corrX=[1. if l==0 else np.sum(xp[l:]*xp[:-l])/len(trajX)/var for l in lags]
+
+mean=np.mean(trajY)
+var=np.var(trajY)
+yp=trajY-mean
+corrY=[1. if l==0 else np.sum(yp[l:]*yp[:-l])/len(trajY)/var for l in lags]
+
+plt.plot(corrX,color="orange")
+plt.plot(corrY,color="cyan")
+plt.show()
 
 # Calculate the theoretical autocorrelations
-cXTheory = np.zeros(100)
-cYTheory = np.zeros(100)
-for t in range(100):
+cXTheory = np.zeros(cLength)
+cYTheory = np.zeros(cLength)
+for t in range(cLength):
 	cXTheory[t] = ((kB * temp)/kX) * np.exp(-kX * dT * t / gamma)
 	cYTheory[t] = ((kB * temp)/kY) * np.exp(-kY * dT * t / gamma)
-print(len(cXTheory))
-plt.figure()
 plt.plot(cXTheory,color="red")
 plt.plot(cYTheory,color="blue")
 plt.yticks([])
@@ -94,4 +121,5 @@ tickLabels = ['0','0.2', '0.4', '0.6', '0.8', '1']
 plt.xticks(xTicks, tickLabels)
 plt.xlabel('Time [s]')
 plt.ylabel('Cx, Cy')
+
 plt.show()
