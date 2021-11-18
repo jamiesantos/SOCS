@@ -20,23 +20,23 @@ dT = 0.001
 nSteps = 100000
 
 # Generate the trajectories
-trajX = np.zeros(nSteps)
-trajY = np.zeros(nSteps)
-wX = np.random.default_rng().normal(0, 1, size=(nSteps))
-wY = np.random.default_rng().normal(0, 1, size=(nSteps))
+def generate_trajectories(kXVal,kYVal):
+	trajX = np.zeros(nSteps)
+	trajY = np.zeros(nSteps)
+	wX = np.random.default_rng().normal(0, 1, size=(nSteps))
+	wY = np.random.default_rng().normal(0, 1, size=(nSteps))
 
-#def generate_trajectories(kX,kY):
-for i in range(nSteps - 1):
-	termX2 = (-kX/gamma) * trajX[i] * dT
-	termX3 = sqrt((2 * kB * temp * dT)/gamma) * wX[i+1]
-	trajX[i + 1] = trajX[i] + termX2 + termX3
+	for i in range(nSteps - 1):
+		termX2 = (-kXVal/gamma) * trajX[i] * dT
+		termX3 = sqrt((2 * kB * temp * dT)/gamma) * wX[i+1]
+		trajX[i + 1] = trajX[i] + termX2 + termX3
 
-	termY2 = (-kY/gamma) * trajY[i] * dT
-	termY3 = sqrt((2 * kB * temp * dT)/gamma) * wY[i+1]
-	trajY[i + 1] = trajY[i] + termY2 + termY3
-#	return trajX,trajY
+		termY2 = (-kYVal/gamma) * trajY[i] * dT
+		termY3 = sqrt((2 * kB * temp * dT)/gamma) * wY[i+1]
+		trajY[i + 1] = trajY[i] + termY2 + termY3
+	return trajX,trajY
 
-#trajX,trajY = generate_trajectories(kX,kY)
+trajX,trajY = generate_trajectories(kX,kY)
 
 # Plot the path of the particle
 plt.figure(figsize=(10,10))
@@ -112,8 +112,8 @@ scaleY = np.average(cYExp)/np.average(cYTheory)
 for i in range(len(cXTheory)):
 	cXTheory[i] = cXTheory[i] * scaleX
 	cYTheory[i] = cYTheory[i] * scaleY
-#plt.plot(cXTheory,color="red",label="C_x: theoretical")
-#plt.plot(cYTheory,color="blue",label="C_y: theoretical")
+plt.plot(cXTheory,color="red",label="C_x: theoretical")
+plt.plot(cYTheory,color="blue",label="C_y: theoretical")
 
 plt.yticks([])
 xTicks = [0, 20, 40, 60, 80, 100] # dT = 0.001
@@ -125,14 +125,23 @@ plt.legend(loc="upper right")
 plt.show(block=False)
 
 # Simulate particle motion for range of stiffnesses
-kList = [0.5*10**-6, 10**-6 , 2*10**-6, 5*10**-6, 10*10**-6]
+kList = np.arange(0.05*10**-6,10**-6,0.1*10**-6)
+positionalVars = []
+expVarsList = []
+for i, kVal in enumerate(kList):
+	trajXTemp,trajYTemp = generate_trajectories(kVal,kVal)
+	posVarX = np.average(np.square(trajXTemp))
+	positionalVars.append(posVarX)
 
-#for i, kVal in enumarate(kList):
-	
+	expVars = kB * temp / kVal
+	print(expVars)
+	expVarsList.append(expVars)
 
 # Plot variance as function of stiffness
-
-
-
-
+plt.figure()
+plt.plot(positionalVars,color="red",label="x var: experimental")
+plt.plot(expVarsList,color="blue",label="x var: theoretical")
+plt.legend(loc="upper right")
+plt.xlabel('k (pN / micrometer)')
+plt.ylabel('<x^2>')
 plt.show()
