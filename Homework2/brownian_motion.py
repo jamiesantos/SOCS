@@ -20,10 +20,6 @@ kB = 1.380649 * 10**-23			# J * K^-1
 length = 100 * tau
 nSteps = int(length / dT)
 nAgents = 100					# Number of realizations
-#nSteps = 10
-#nAgents = 7
-print(length)
-print(nSteps)
 
 # Get the next step (with mass):
 def nextStepMass(dT, gamma, m, kB, temp, w, xList):
@@ -110,7 +106,7 @@ tickLabels1 = ['10^0', '10^2']
 plt.xticks(xTicks1, tickLabels1)
 plt.ylabel('MSD')
 plt.xlabel('t / tau')
-plt.show(block=False)
+#plt.show(block=False)
 
 # Calculate eMSD
 print("eMSD, with mass: " + str(np.average(msdMassList)))
@@ -125,12 +121,19 @@ prefactor = (1/len(massPath))
 tMSDList = []
 for lag in range(len(massPath) - 1):
 	if lag != 0:
-		diffSquared = np.subtract(massPath[lag:],massPath[:-lag])
-		tMSD = np.average(diffSquared)	
+		diff = np.subtract(massPath[lag:],massPath[:-lag])
+		diffSquared = diff * diff
+		prefactor = 1 / len(diffSquared)
+		tMSD =  prefactor * sum(diffSquared)
 		tMSDList.append(tMSD)
+#diffSum = 0
+#for i in range(len(massPath)):
+#	diffSum += massPath[i]**2
+#	tMSD = np.mean(diffSum)
 
 plt.figure()
-plt.plot(tMSDList)
+plt.plot(tMSDList,linewidth = 1, color = "orange",label="tMSD with Mass")
+plt.plot(msdMassList,linewidth = 1, color="blue",label="eMSD with mass")
 plt.show()
 print("tMSD, with mass: " + str(np.average(msdMass)))
 print("tMSD, without mass: " + str(np.average(msdMassless)))
