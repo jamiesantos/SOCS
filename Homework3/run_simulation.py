@@ -4,8 +4,8 @@ from matplotlib.animation import FuncAnimation
 from patients import Patient
 
 # Initialize parameters/constants
-AGENTS = 70
-INF_RATE = 0.4
+AGENTS = 1000
+INF_RATE = 0.01
 I_INIT = int(round(AGENTS * INF_RATE))
 R_INIT = 0
 S_INIT = AGENTS - I_INIT - R_INIT
@@ -36,14 +36,13 @@ for i in range(AGENTS):
 # Initialize graphics
 xInit = [p.x for p in population]
 yInit = [p.y for p in population]
-print(xInit)
 
 fig, (ax1, ax2) = plt.subplots(1, 2, sharey=False)
 scatt=ax1.scatter(xInit,yInit,c='blue',s=10)
-#ax1.set_yticklabels([])
-#ax1.set_xticklabels([])
-#ax1.set_xticks([])
-#ax1.set_yticks([])
+ax1.set_yticklabels([])
+ax1.set_xticklabels([])
+ax1.set_xticks([])
+ax1.set_yticks([])
 ax1.set(xlim=(-.1, TILE_SIZE + 0.1), ylim=(-.1, TILE_SIZE + 0.1))
 
 susceptible,=ax2.plot(AGENTS - currInfected,color="blue",label="Susceptible")
@@ -80,16 +79,14 @@ def update(frame,susList,infList,recList,times):
 					other.spread_infection(p)
 
 			# Check if patient has recovered
-			#if np.random.rand() < GAMMA:
-			#	p.recover()
-		#elif p.recovered:
-		#	nRecovered += 1
+			if np.random.rand() < GAMMA:
+				p.recover()
+		elif p.recovered:
+			nRecovered += 1
 
 		colors.append(p.plot_color())
 
 	nSusceptible = AGENTS - nInfected - nRecovered
-	#print("infected: " + str(nInfected))
-	#print("recovered: " + str(nRecovered))
 	susList.append(nSusceptible)
 	infList.append(nInfected)
 	recList.append(nRecovered)
@@ -108,7 +105,3 @@ def update(frame,susList,infList,recList,times):
 
 animation = FuncAnimation(fig, update, interval=10,fargs=(susList,infList,recList,times),blit=False)
 plt.show()
-#for p in population:
-#	print("s: " + str(p.susceptible))
-#	print("i: " + str(p.infected))
-#	print("r: " + str(p.recovered))

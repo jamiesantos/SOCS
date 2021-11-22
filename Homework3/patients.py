@@ -9,19 +9,6 @@ from math import sqrt
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-# Initialize parameters/constants
-#AGENTS = 3
-#I_INIT = 1
-#R_INIT = 0
-#S_INIT = AGENTS - I_INIT - R_INIT
-#TILE_SIZE = 100		# tileSize x tileSize area	
-#GAMMA = 0.01		# Recovery rate
-#D = 0.8				# Diffusion rate
-#beta = 0.6			# Infection rate (varying)
-
-#nRecovered = R_INIT
-#nInfected = I_INIT
-		
 # Create a "patient" class
 class Patient:
 	def __init__(self, idNum, x, y):
