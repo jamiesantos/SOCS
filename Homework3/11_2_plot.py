@@ -27,8 +27,8 @@ betas= [0., 0.03, 0.06, 0.09, 0.12, 0.15, 0.18, 0.21, 0.24, 0.27, 0.3, 0.33, 0.3
  0.84, 0.87, 0.9,  0.93, 0.96, 0.99]
 
 
-gamma1List = np.mean(np.array([ g1_1, g1_2, g1_3, g1_4, g1_5, g1_6 ]), axis=0 )
-gamma2List = np.mean(np.array([ g2_1, g2_2, g2_4, g2_7]), axis=0 )
+gamma1List = np.mean(np.array([ g1_1, g1_2, g1_3, g1_4, g1_5, g1_6, g1_7 ]), axis=0 )
+gamma2List = np.mean(np.array([ g2_1, g2_2, g2_3, g2_4, g2_5, g2_6, g2_7]), axis=0 )
 
 betas1 = [ x/0.01 for x in betas ]
 betas2 = [ x/0.01 for x in betas ]
