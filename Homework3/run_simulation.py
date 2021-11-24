@@ -16,7 +16,7 @@ GAMMA = 0.01		# Recovery rate
 D = 0.8				# Diffusion rate
 timeSteps = 2000 	# Experimental value
 beta = 0.6          # Infection rate (varying)
-mu = 0.00			# Death rate
+mu = 0.002			# Death rate
 
 nRecovered = R_INIT
 nInfected = I_INIT
@@ -105,7 +105,10 @@ def update(frame,susList,infList,recList,deadList,times):
 				p.recover()
 
 			# Check if the patient isn't so lucky
-			if np.random.rand() < mu:
+			r1 = np.random.normal()
+			r2 = np.random.random()
+			#print(r2)
+			if r2 < mu:
 				p.die()
 
 
@@ -139,6 +142,10 @@ def update(frame,susList,infList,recList,deadList,times):
 	infected.set_data(times,infList)
 	recovered.set_data(times,recList)
 	dead.set_data(times,deadList)
+
+	# Get the total number of dead patients
+	if nInfected == 0:
+		print(nDead)
 
 	return scatt,susceptible,infected,recovered,dead
 
