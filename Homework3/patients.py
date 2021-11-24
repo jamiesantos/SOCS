@@ -19,6 +19,7 @@ class Patient:
 		self.susceptible = True
 		self.infected = False
 		self.recovered = False
+		self.dead = False
 
 		# Positions
 		self.x = x
@@ -28,11 +29,19 @@ class Patient:
 		self.susceptible = False
 		self.infected = True
 		self.recovered = False
+		self.dead = False
 
 	def recover(self):
 		self.susceptible = False
 		self.infected = False
 		self.recovered = True
+		self.dead = False
+
+	def die(self):
+		self.susceptible = False
+		self.infected = False
+		self.recovered = False
+		self.dead = True
 
 	def get_current_pos(self):
 		return self.x,self.y
@@ -49,7 +58,7 @@ class Patient:
 	def update_square(self,d,tileSize):
 		# Make a move with probability d
 		stepDecision = np.random.rand()
-		if stepDecision < d:
+		if self.dead == False and stepDecision < d:
 			if stepDecision < d/2:
 				self.x += np.sign(np.random.randn())
 			else:
@@ -72,4 +81,6 @@ class Patient:
 			return "orange"
 		elif self.recovered:
 			return "green"
+		elif self.dead:
+			return "gray"
 
