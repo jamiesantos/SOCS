@@ -14,9 +14,10 @@ S_INIT = AGENTS - I_INIT - R_INIT - D_INIT
 TILE_SIZE = 100		# tileSize x tileSize area	
 GAMMA = 0.01		# Recovery rate
 D = 0.8				# Diffusion rate
-timeSteps = 2000 	# Experimental value
+timeSteps = 1000 	# Experimental value
 beta = 0.6          # Infection rate (varying)
-mu = 0.002			# Death rate
+mu = 0.000			# Death rate
+alpha = 0.1			# Re-susceptibility rate
 
 nRecovered = R_INIT
 nInfected = I_INIT
@@ -36,9 +37,11 @@ for i in range(AGENTS):
 	patient = Patient(i, x, y)
 
 	# Perhaps infect the person
-	if np.random.random() < INF_RATE: # May need to include if no one is infected 
+	if np.random.random() < INF_RATE: 
 		patient.infect()
 		currInfected += 1
+		patient.x = TILE_SIZE / 2 # Try starting in the middle
+		patient.y = TILE_SIZE / 2
 	population.append(patient)
 
 ########################
@@ -116,6 +119,10 @@ def update(frame,susList,infList,recList,deadList,times):
 		elif p.recovered:
 			nRecovered += 1
 
+			# Check if patient is susceptible again
+			if np.random.random() < alpha:
+				p.suscept()
+				
 		# If the patient was already dead
 		elif p.dead:
 			nDead += 1
@@ -153,5 +160,5 @@ def update(frame,susList,infList,recList,deadList,times):
 # Run the simulation #
 ######################
 
-animation = FuncAnimation(fig, update, interval=10,fargs=(susList,infList,recList,deadList,times),blit=False)
+animation = FuncAnimation(fig, update, interval=1,fargs=(susList,infList,recList,deadList,times),blit=False)
 plt.show()

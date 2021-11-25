@@ -6,7 +6,8 @@ from patients import Patient
 # Initialize parameters/constants
 
 AGENTS = 1000
-INF_RATE = 0.01
+#INF_RATE = 0.01
+INF_RATE = 0.05
 I_INIT = int(round(AGENTS * INF_RATE))
 R_INIT = 0
 D_INIT = 0
@@ -23,8 +24,9 @@ nRecovered = R_INIT
 nInfected = I_INIT
 nDead = D_INIT
 
-question_2 = False
-question_3 = True
+question_2b = False
+question_2c = True
+question_3 = False
 
 def initializeSimulation(beta,gamma):
 	#############################
@@ -97,18 +99,20 @@ def update(beta,recInf,gamma,gammaList,deadInf,mu,muList):
 	if nInfected == 0:
 		recInf = True
 		gammaList.append(nRecovered)
+		print(gammaList)
 
-		deadInf = True
-		muList.append(nDead)
+		# Uncomment for part 3
+		#deadInf = True
+		#muList.append(nDead)
 
 	#return scatt,susceptible,infected,recovered,recInf,gammaList
-	return recInf,gammaList,deadInf,muList
+	return recInf,gammaList,deadInf,muList,nRecovered
 
 ######################
 # Run the simulation #
 ######################
 
-if question_2:
+if question_2b:
 	mu = 0
 	muList = []
 	betas = np.arange(0,1,0.03)
@@ -142,6 +146,45 @@ if question_2:
 	plt.xlabel('Beta')
 	plt.ylabel('R_infinity')
 	plt.show()
+
+elif question_2c:
+	gammaList = []
+	deadInf = False
+	bgList = [1, 10, 20, 30, 40, 50, 60, 70, 80]
+	betaList = [0.01, .2, .3, .4, .5, .6, .7, .8, .9, 1]
+	#bgList = [1, 10]
+	#betaList = [0.01, .2]
+	mu = 0
+	muList = []
+	heatMapData = []
+
+	for b in range(len(betaList)):
+		beta = betaList[b]
+		print(beta)
+		heatMapColumn = []
+
+		for bgIndex in range(len(bgList)):
+			bg = bgList[bgIndex]
+			gamma = beta / bg
+			print(gamma)
+
+			recInf = False
+			muList = []
+
+			population = initializeSimulation(beta,gamma)
+			#frame = 0
+			while recInf == False:
+				recInf,gammaList,deadInf,muList,nRec = update(beta,recInf,gamma,gammaList,deadInf,mu,muList)
+				#frame += 1
+			heatMapColumn.append(nRec)
+			print(heatMapColumn)
+		heatMapData.append(heatMapColumn)
+		print(heatMapData)
+
+	# Plot final number dead as a function of mu
+	plt.imshow(heatMapData, cmap='hot', interpolation='nearest')
+	plt.show()
+	
 
 elif question_3:
 	beta = 1

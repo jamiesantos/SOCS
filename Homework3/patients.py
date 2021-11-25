@@ -43,6 +43,12 @@ class Patient:
 		self.recovered = False
 		self.dead = True
 
+	def suscept(self):
+		self.susceptible = True
+		self.infected = False
+		self.recovered = False
+		self.dead = False
+
 	def get_current_pos(self):
 		return self.x,self.y
 
@@ -72,7 +78,7 @@ class Patient:
 		elif self.x > tileSize:
 			self.x = tileSize
 		elif self.y > tileSize:
-			self.y = tileSize 		
+			self.y = tileSize		
 
 	def plot_color(self):
 		if self.susceptible:
