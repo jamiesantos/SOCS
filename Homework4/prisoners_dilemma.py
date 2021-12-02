@@ -24,39 +24,57 @@ def multiple_rounds(m, numRounds):
 	yearsList2 = []
 
 	for n in range(len(nValues)):
-		#n = 2
 		totalSentence1 = 0
 		totalSentence2 = 0
-
+	
 		p1 = Prisoner()
 		p2 = Prisoner()
-
+	
 		for rnd in range(N):
 
-			# Prisoners makes a choice based off n/m values
+			# Prisoners make a choice based off n/m values
 			p2.strategize(p1,rnd,m)
 			p1.strategize(p2,rnd,n)
-
-			# Track the last move Prisoner 2 made
+	
+			# Track the last move each prisoner made
 			p1.track_opponent(p2.strategy)
 			p2.track_opponent(p1.strategy)
-
+	
 			totalSentence1 += p1.get_sentence(T,R,P,S,p2)
 			totalSentence2 += p2.get_sentence(T,R,P,S,p1)
-
+	
 			#print("Sentence1: " + str(totalSentence1))
 			#print("Sentence2: " + str(totalSentence2))
 		yearsList1.append(totalSentence1)
 		yearsList2.append(totalSentence2)
+
 	return yearsList1, yearsList2
 
-yearsList1,yearsList2 = multiple_rounds(m, N)
 
 # Plot for 1A
+yearsList1,yearsList2 = multiple_rounds(m, N)
+
 plt.figure()
 plt.scatter(nValues,yearsList1,linewidth = 1, color="blue",label="p1")
-#plt.scatter(nValues,yearsList2,linewidth = 1, color="orange",label="p2")
 plt.xticks(np.arange(min(nValues), max(nValues)+1, 1.0))
 plt.ylabel('Years in prison')
 plt.xlabel('n')
+
+# Plot for 1B
+mValues = nValues
+heatMapData = []
+
+for mVal in range(len(mValues)):
+	m = mVal
+	yearsList1,yearsList2 = multiple_rounds(m, N)
+	heatMapData.append(yearsList1)
+
+heatMapData = np.transpose(np.array(heatMapData))
+
+plt.figure()
+plt.imshow(heatMapData,origin='lower', cmap='summer', interpolation='nearest')
+plt.title('Years in Prison')
+plt.xlabel('m')
+plt.ylabel('n')
+plt.colorbar()
 plt.show()

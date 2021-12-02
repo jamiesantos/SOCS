@@ -15,24 +15,24 @@ class Prisoner:
 	def strategize(self,other,rnd,switchNum):
 		#if rnd < switchNum and other.strategy:
 		if rnd < switchNum and self.last_opponent:
-			print("cooperate: round: " + str(rnd) + " trigger: " + str(switchNum))
+			#print("cooperate: round: " + str(rnd) + " trigger: " + str(switchNum))
 			self.strategy = True
 		else:
-			print("betray: round: " + str(rnd) + " trigger: " + str(switchNum))
+			#print("betray: round: " + str(rnd) + " trigger: " + str(switchNum))
 			self.strategy = False
 
 	def get_sentence(self, t, r, p, s, other):
 		if not self.strategy and other.strategy:
-			print("T")
+			#print("T")
 			self.score = t
 		elif self.strategy and other.strategy:
-			print("R")
+			#print("R")
 			self.score = r
 		elif not self.strategy and not other.strategy:
-			print("P")
+			#print("P")
 			self.score = p
 		elif self.strategy and not other.strategy:
-			print("S")
+			#print("S")
 			self.score = s
 		return self.score
 
