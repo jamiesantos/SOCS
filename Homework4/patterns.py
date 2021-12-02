@@ -4,21 +4,21 @@
 # Date: 12/2/21
 
 import numpy as np
-import random
+from random import randrange
 from math import sqrt
 from matplotlib import pyplot as plt
 from prisoner import Prisoner
 
 # Initialize parameters
 N = 7			# Number of rounds
-T = 0			# Sentence for single defector
-R = 0.5			# Both cooperate 
+T = 10			# Sentence for single defector
+R = 0.9			# Both cooperate 
 P = 1			# Both defect
 S = 1.5			# Sentence for single cooperator
 m = 6			# Turns until accomplice becomes traitor
-L = 10			# Lattice size
+L = 30			# Lattice size
 mu = 0			# Probability of mutation
-timeSteps = 1
+timeSteps = 20
 
 #nValues = np.arange(0,N+1,1)
 nValues = [0,N]
@@ -79,11 +79,73 @@ def play_neighbors(row,column,latticeStrats):
 
 	return totalScore
 
+# Check neighbors for lowest sentences and steal their strategy
+def revise_strategy(row,column,latticeStrats,latticeScores):
+	newScore = latticeScores[row][column]
+	newStrategy = latticeStrats[row][column]	# Assign current strategy first
+	tieRow = []
+	tieColumn = []
+	tieStrats = []
+
+	# Up
+	if row == 0:
+		tieColumn,tieRow,newScore,newStrategy = track_scores(
+			-1,column,newScore,newStrategy,latticeStrats,latticeScores,tieRow,tieColumn)
+	else:
+		tieColumn,tieRow,newScore,newStrategy = track_scores(
+			row - 1,column,newScore,newStrategy,latticeStrats,latticeScores,tieRow,tieColumn)
+	# Down
+	if row == L - 1:
+		tieColumn,tieRow,newScore,newStrategy = track_scores(
+			0,column,newScore,newStrategy,latticeStrats,latticeScores,tieRow,tieColumn)
+	else:
+		tieColumn,tieRow,newScore,newStrategy = track_scores(
+			row + 1,column,newScore,newStrategy,latticeStrats,latticeScores,tieRow,tieColumn)
+	# Left
+	if column == 0:
+		tieColumn,tieRow,newScore,newStrategy = track_scores(
+			row,-1,newScore,newStrategy,latticeStrats,latticeScores,tieRow,tieColumn)
+	else:
+		tieColumn,tieRow,newScore,newStrategy = track_scores(
+			row,column - 1,newScore,newStrategy,latticeStrats,latticeScores,tieRow,tieColumn)
+
+	# Right
+	if column == L - 1:
+		tieColumn,tieRow,newScore,newStrategy = track_scores(
+			row,0,newScore,newStrategy,latticeStrats,latticeScores,tieRow,tieColumn)
+	else:
+		tieColumn,tieRow,newScore,newStrategy = track_scores(
+			row,column + 1,newScore,newStrategy,latticeStrats,latticeScores,tieRow,tieColumn)
+
+	# Check the ties
+	if tieRow != []:
+		randI = randrange(len(tieRow))
+		newStrategy = latticeStrats[tieRow[randI]][tieColumn[randI]]
+
+	return newStrategy
+
+def track_scores(checkRow,checkColumn,newScore,newStrategy,latticeStrats,latticeScores,tieRow,tieColumn):
+	otherScore = latticeScores[checkRow][checkColumn]
+
+	if otherScore > newScore:
+		newScore = otherScore
+		newStrategy = latticeStrats[checkRow][checkColumn]
+		tieRow = []
+		tieColumn = []
+	elif otherScore == newScore:
+		tieRow.append(checkRow)
+		tieColumn.append(checkColumn)
+
+	return tieColumn,tieRow,newScore,newStrategy
+
+
+
 # Initialize a lattice of stategies
 #latticeStrats = [[random.choice(nValues) for item in np.zeros(L)] for line in np.zeros(L)]
 
 # Implant a single defector in the center
-latticeStrats = [[random.choice(nValues) for item in np.zeros(L)] for line in np.zeros(L)]
+latticeStrats = np.zeros((L,L)) + N
+latticeStrats[int(round(L/2))][int(round(L/2))] = 0
 
 # Initialize a lattice of scores
 latticeScores = np.zeros((L,L))
@@ -95,15 +157,22 @@ for t in range(timeSteps):
 	for row in range(L):
 		for column in range(L):
 			latticeScores[row][column] = play_neighbors(row,column,latticeStrats)
-
+		
 	#### REVISE ####
-	
-
+	for row in range(L):
+		for column in range(L):
+			latticeStrats[row][column] = revise_strategy(row,column,latticeStrats,latticeScores)	
+		
 	#### MUTATE ####
+
+	
+	print(latticeScores)
+	print(latticeStrats)
+	print("  ")
 
 # Plot the heatmap of total prison sentences per person
 plt.figure()
-plt.imshow(latticeScores,origin='lower', cmap='spring', interpolation='nearest')
+plt.imshow(latticeStrats,origin='lower', cmap='cool', interpolation='nearest')
 plt.title('Years in Prison')
 plt.colorbar()
 plt.show()
