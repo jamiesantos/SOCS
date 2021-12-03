@@ -146,9 +146,10 @@ def track_scores(checkRow,checkColumn,newScore,newStrategy,latticeStrats,lattice
 # Implant a single defector in the center
 latticeStrats = np.zeros((L,L)) + N
 #latticeStrats[int(round(L/2))][int(round(L/2))] = 0
-latticeStrats[8][8] = 0
-latticeStrats[15][15] = 0
-latticeStrats[23][23] = 0
+latticeStrats[6][6] = 0
+latticeStrats[12][12] = 0
+latticeStrats[18][18] = 0
+latticeStrats[24][24] = 0
 
 # Initialize a lattice of scores
 latticeScores = np.zeros((L,L))
