@@ -13,13 +13,13 @@ from prisoner import Prisoner
 # Initialize parameters
 N = 7			# Number of rounds
 T = 0			# Sentence for single defector
-R = 0.72		# Both cooperate 
+R = 0.82		# Both cooperate 
 P = 1			# Both defect
-S = 3			# Sentence for single cooperator
+S = 1.5			# Sentence for single cooperator
 m = 6			# Turns until accomplice becomes traitor
 L = 30			# Lattice size
 mu = 0.01		# Probability of mutation
-timeSteps = 100
+timeSteps = 200
 
 #nValues = np.arange(0,N+1,1)
 nValues = [0,N]
@@ -167,10 +167,16 @@ for t in range(timeSteps):
 			latticeScores[row][column] = play_neighbors(row,column,latticeStrats)
 		
 	#### REVISE ####
+	latticeStratsTemp = np.zeros((L,L))
+	print(latticeStratsTemp)
 	for row in range(L):
 		for column in range(L):
-			latticeStrats[row][column] = revise_strategy(row,column,latticeStrats,latticeScores)	
-		
+			latticeStratsTemp[row][column] = revise_strategy(row,column,latticeStrats,latticeScores)	
+	print(" ")
+	print(latticeStratsTemp)
+	print(" ")
+	latticeStrats = latticeStratsTemp.copy()
+
 	#### MUTATE ####
 	for row in range(L):
 		for column in range(L):
@@ -183,7 +189,8 @@ for t in range(timeSteps):
 
 # Plot the heatmap of total prison sentences per person
 plt.figure()
-plt.imshow(latticeStrats,origin='lower', cmap='gist_rainbow', interpolation='nearest')
+#plt.imshow(latticeStrats,origin='lower', cmap='gist_rainbow', interpolation='nearest')
+plt.imshow(latticeStrats,origin='lower', cmap='cool', interpolation='nearest')
 plt.title('Strategies')
 plt.colorbar()
 plt.show()
