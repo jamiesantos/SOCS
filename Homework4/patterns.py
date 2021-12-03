@@ -4,6 +4,7 @@
 # Date: 12/2/21
 
 import numpy as np
+import random
 from random import randrange
 from math import sqrt
 from matplotlib import pyplot as plt
@@ -12,13 +13,13 @@ from prisoner import Prisoner
 # Initialize parameters
 N = 7			# Number of rounds
 T = 0			# Sentence for single defector
-R = 0.9		# Both cooperate 
+R = 0.72		# Both cooperate 
 P = 1			# Both defect
-S = 1.5			# Sentence for single cooperator
+S = 3			# Sentence for single cooperator
 m = 6			# Turns until accomplice becomes traitor
-L = 31			# Lattice size
-mu = 0			# Probability of mutation
-timeSteps = 20
+L = 30			# Lattice size
+mu = 0.01		# Probability of mutation
+timeSteps = 100
 
 #nValues = np.arange(0,N+1,1)
 nValues = [0,N]
@@ -139,20 +140,23 @@ def track_scores(checkRow,checkColumn,newScore,newStrategy,latticeStrats,lattice
 	return tieColumn,tieRow,newScore,newStrategy
 
 
+#######################
+# Initialize lattices #
+#######################
 
-# Initialize a lattice of stategies
 #latticeStrats = [[random.choice(nValues) for item in np.zeros(L)] for line in np.zeros(L)]
 
-# Implant a single defector in the center
-latticeStrats = np.zeros((L,L)) + N
-#latticeStrats[int(round(L/2))][int(round(L/2))] = 0
-latticeStrats[6][6] = 0
-latticeStrats[12][12] = 0
-latticeStrats[18][18] = 0
-latticeStrats[24][24] = 0
+latticeStrats = np.zeros((L,L))
+
+#latticeiStrats[int(round(L/2))][int(round(L/2))] = 0 	# Implant a single defector in the center
+cluster = np.arange(14,17,1) 		# Implant a cluster of defectors in the center
+for i in range(len(cluster)):
+	for j in range(len(cluster)):
+		latticeStrats[cluster[i]][cluster[j]] = N
 
 # Initialize a lattice of scores
 latticeScores = np.zeros((L,L))
+
 
 # Run a simulation for number of timeSteps over an LxL lattice of prisoners
 for t in range(timeSteps):
@@ -168,14 +172,18 @@ for t in range(timeSteps):
 			latticeStrats[row][column] = revise_strategy(row,column,latticeStrats,latticeScores)	
 		
 	#### MUTATE ####
+	for row in range(L):
+		for column in range(L):
+			if random.uniform(0,1) < mu:
+				latticeStrats[row][column] = random.choice(nValues)
 	
-	print(latticeScores)
-	print(latticeStrats)
-	print("  ")
+#	print(latticeScores)
+#	print(latticeStrats)
+#	print("  ")
 
 # Plot the heatmap of total prison sentences per person
 plt.figure()
-plt.imshow(latticeStrats,origin='lower', cmap='cool', interpolation='nearest')
+plt.imshow(latticeStrats,origin='lower', cmap='gist_rainbow', interpolation='nearest')
 plt.title('Strategies')
 plt.colorbar()
 plt.show()
