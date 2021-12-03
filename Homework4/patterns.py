@@ -12,7 +12,7 @@ from prisoner import Prisoner
 # Initialize parameters
 N = 7			# Number of rounds
 T = 0			# Sentence for single defector
-R = 0.9			# Both cooperate 
+R = 0.9		# Both cooperate 
 P = 1			# Both defect
 S = 1.5			# Sentence for single cooperator
 m = 6			# Turns until accomplice becomes traitor
@@ -145,7 +145,9 @@ def track_scores(checkRow,checkColumn,newScore,newStrategy,latticeStrats,lattice
 
 # Implant a single defector in the center
 latticeStrats = np.zeros((L,L)) + N
-latticeStrats[int(round(L/2))][int(round(L/2))] = 0
+#latticeStrats[int(round(L/2))][int(round(L/2))] = 0
+latticeStrats[20][20] = 0
+latticeStrats[10][10] = 0
 
 # Initialize a lattice of scores
 latticeScores = np.zeros((L,L))
