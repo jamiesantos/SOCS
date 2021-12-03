@@ -11,12 +11,12 @@ from prisoner import Prisoner
 
 # Initialize parameters
 N = 7			# Number of rounds
-T = 10			# Sentence for single defector
+T = 0			# Sentence for single defector
 R = 0.9			# Both cooperate 
 P = 1			# Both defect
 S = 1.5			# Sentence for single cooperator
 m = 6			# Turns until accomplice becomes traitor
-L = 30			# Lattice size
+L = 31			# Lattice size
 mu = 0			# Probability of mutation
 timeSteps = 20
 
@@ -127,7 +127,7 @@ def revise_strategy(row,column,latticeStrats,latticeScores):
 def track_scores(checkRow,checkColumn,newScore,newStrategy,latticeStrats,latticeScores,tieRow,tieColumn):
 	otherScore = latticeScores[checkRow][checkColumn]
 
-	if otherScore > newScore:
+	if otherScore < newScore:
 		newScore = otherScore
 		newStrategy = latticeStrats[checkRow][checkColumn]
 		tieRow = []
@@ -164,7 +164,6 @@ for t in range(timeSteps):
 			latticeStrats[row][column] = revise_strategy(row,column,latticeStrats,latticeScores)	
 		
 	#### MUTATE ####
-
 	
 	print(latticeScores)
 	print(latticeStrats)
@@ -173,6 +172,6 @@ for t in range(timeSteps):
 # Plot the heatmap of total prison sentences per person
 plt.figure()
 plt.imshow(latticeStrats,origin='lower', cmap='cool', interpolation='nearest')
-plt.title('Years in Prison')
+plt.title('Strategies')
 plt.colorbar()
 plt.show()
