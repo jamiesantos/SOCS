@@ -10,10 +10,12 @@ from math import sqrt
 from matplotlib import pyplot as plt
 from prisoner import Prisoner
 
+question_4 = False
+
 # Initialize parameters
 N = 7			# Number of rounds
 T = 0			# Sentence for single defector
-R = 0.49		# Both cooperate
+R = 0.8		# Both cooperate
 P = 1			# Both defect
 S = 1.5			# Sentence for single cooperator
 m = 6			# Turns until accomplice becomes traitor
@@ -159,6 +161,16 @@ latticeStrats = [[random.choice(nValues) for item in np.zeros(L)] for line in np
 # Initialize a lattice of scores
 latticeScores = np.zeros((L,L))
 
+if question_4 == True:
+	# Initialize lists to track strategies at each time step
+	list0 = []
+	list1 = []
+	list2 = []
+	list3 = []
+	list4 = []
+	list5 = []
+	list6 = []
+	list7 = []
 
 # Run a simulation for number of timeSteps over an LxL lattice of prisoners
 for t in range(timeSteps):
@@ -181,10 +193,38 @@ for t in range(timeSteps):
 			if random.uniform(0,1) < mu:
 				latticeStrats[row][column] = random.choice(nValues)
 
+	if question_4 == True:
+		### TRACK STRATEGIES ###
+		list0.append(sum(list(x).count(0) for x in latticeStrats))
+		list1.append(sum(list(x).count(1) for x in latticeStrats))
+		list2.append(sum(list(x).count(2) for x in latticeStrats))
+		list3.append(sum(list(x).count(3) for x in latticeStrats))
+		list4.append(sum(list(x).count(4) for x in latticeStrats))
+		list5.append(sum(list(x).count(5) for x in latticeStrats))
+		list6.append(sum(list(x).count(6) for x in latticeStrats))
+		list7.append(sum(list(x).count(7) for x in latticeStrats))
+
+
 # Plot the heatmap of total prison sentences per person
 plt.figure()
 plt.imshow(latticeStrats,origin='lower', cmap='gist_rainbow', interpolation='nearest')
 #plt.imshow(latticeStrats,origin='lower', cmap='cool', interpolation='nearest')
 plt.title('Strategies')
 plt.colorbar()
+
+if question_4 == True:
+	# Plot the strategies over time
+	plt.figure()
+	plt.plot(list0,color="red",label="0")
+	plt.plot(list1,color="orange",label="1")
+	plt.plot(list2,color="yellow",label="2")
+	plt.plot(list3,color="lime",label="3")
+	plt.plot(list4,color="green",label="4")
+	plt.plot(list5,color="cyan",label="5")
+	plt.plot(list6,color="blue",label="6")
+	plt.plot(list7,color="purple",label="7")
+	plt.legend(loc="upper right")
+	plt.xlabel('Time')
+	plt.ylabel('Population Fraction')
+
 plt.show()
